@@ -4,12 +4,11 @@
 const express = require('express');
 const router = express.Router();
 const gastoController = require('../controllers/gastoController');
-// const { protect } = require('../middlewares/authMiddleware'); 
-// Asumiendo que el middleware global o la arquitectura actual no protege fuertemente routers individuales si no se indica
+const { verificarToken, verificarMasterKey } = require('../middlewares/auth');
 
-router.get('/', gastoController.getGastos);
-router.post('/', gastoController.crearGasto);
-router.put('/:id', gastoController.actualizarGasto);
-router.delete('/:id', gastoController.eliminarGasto);
+router.get('/', verificarToken, gastoController.getGastos);
+router.post('/', verificarToken, gastoController.crearGasto);
+router.put('/:id', verificarToken, gastoController.actualizarGasto);
+router.delete('/:id', verificarToken, verificarMasterKey, gastoController.eliminarGasto);
 
 module.exports = router;

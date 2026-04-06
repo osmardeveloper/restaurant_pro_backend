@@ -2,7 +2,7 @@
 // src/routes/usuarios.js
 // ============================================================
 const router = require('express').Router();
-const { verificarToken } = require('../middlewares/auth');
+const { verificarToken, verificarMasterKey } = require('../middlewares/auth');
 const {
   getUsuarios,
   getUsuarioPorId,
@@ -16,6 +16,6 @@ router.get('/',    verificarToken, getUsuarios);
 router.get('/:id', verificarToken, getUsuarioPorId);
 router.post('/',   verificarToken, crearUsuario);
 router.put('/:id', verificarToken, actualizarUsuario);
-router.delete('/:id', verificarToken, eliminarUsuario);
+router.delete('/:id', verificarToken, verificarMasterKey, eliminarUsuario);
 
 module.exports = router;

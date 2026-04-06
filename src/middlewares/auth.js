@@ -7,23 +7,37 @@ const jwt = require('jsonwebtoken');
  * Middleware que protege rutas verificando el token JWT
  * Agrega req.usuario con los datos del token si es válido
  */
+/**
+ * Middleware que protege rutas verificando el token JWT
+ * Agrega req.usuario con los datos del token si es válido
+ */
 const verificarToken = (req, res, next) => {
-  // El token llega en el header Authorization: Bearer <token>
-  const authHeader = req.headers['authorization'];
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Acceso denegado. Token no proporcionado.' });
+  const token = req.headers['authorization']?.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ message: 'Token de acceso no solicitado o faltante.' });
   }
 
-  const token = authHeader.split(' ')[1];
-
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.usuario = decoded; // { id, nombre, rol }
+    const decodificado = jwt.verify(token, process.env.JWT_SECRET);
+    req.usuario = decodificado;
     next();
   } catch (err) {
-    return res.status(401).json({ message: 'Token inválido o expirado.' });
+    return res.status(401).json({ message: 'Token inválido o expirado.', error: err.message });
   }
 };
 
-module.exports = { verificarToken };
+/**
+ * Middleware que verifica una Clave Maestra establecida en el .env
+ * Se usa para operaciones sensibles como eliminaciones
+ */
+const verificarMasterKey = (req, res, next) => {
+  const masterKey = req.headers['x-master-key'];
+  const expectedKey = process.env.MASTER_KEY;
+
+  if (!masterKey || masterKey !== expectedKey) {
+    return res.status(403).json({ message: 'Clave Maestra de seguridad incorrecta o no proporcionada.' });
+  }
+  next();
+};
+
+module.exports = { verificarToken, verificarMasterKey };

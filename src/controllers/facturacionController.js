@@ -5,6 +5,7 @@ const Facturacion = require('../models/Facturacion');
 const Mesa = require('../models/Mesa');
 const Comanda = require('../models/Comanda');
 const Contador = require('../models/Contador');
+const Producto = require('../models/Producto');
 
 // ── GET /api/facturacion — Obtener facturas ──────────────────
 const getFacturas = async (req, res) => {
@@ -63,6 +64,17 @@ const crearFactura = async (req, res) => {
       await Comanda.findByIdAndUpdate(req.body.id_comanda, { facturada: true });
     }
 
+    // ── DESCONTAR STOCK AUTOMÁTICAMENTE ────────────────────────
+    if (req.body.detalle_pedido && req.body.detalle_pedido.length > 0) {
+      for (const item of req.body.detalle_pedido) {
+        if (item.id_producto) {
+          await Producto.findByIdAndUpdate(item.id_producto, {
+            $inc: { cantidad: -Number(item.cantidad || 1) }
+          });
+        }
+      }
+    }
+
     const populated = await factura.populate('id_cliente');
     res.status(201).json(populated);
   } catch (err) {
@@ -70,8 +82,34 @@ const crearFactura = async (req, res) => {
   }
 };
 
+// ── DELETE /api/facturacion/:id ──────────────────────────────
+const eliminarFactura = async (req, res) => {
+  try {
+    const factura = await Facturacion.findById(req.params.id);
+    if (!factura) return res.status(404).json({ message: 'Factura no encontrada.' });
+
+    // ── RESTITUIR STOCK AL INVENTARIO ──────────────────────────
+    if (factura.detalle_pedido && factura.detalle_pedido.length > 0) {
+      for (const item of factura.detalle_pedido) {
+        if (item.id_producto) {
+          // A diferencia de la creación (donde se resta), aquí se SUMA
+          await Producto.findByIdAndUpdate(item.id_producto, {
+            $inc: { cantidad: Number(item.cantidad || 1) }
+          });
+        }
+      }
+    }
+
+    await Facturacion.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Factura eliminada e inventario restituido correctamente.' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error al eliminar la factura.', error: err.message });
+  }
+};
+
 module.exports = {
   getFacturas,
   getFacturaPorId,
   crearFactura,
+  eliminarFactura,
 };
