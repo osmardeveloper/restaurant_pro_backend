@@ -26,6 +26,7 @@ const facturacionSchema = new mongoose.Schema(
         id_producto: { type: mongoose.Schema.Types.ObjectId, ref: 'Producto' },
         nombre: { type: String, required: true },
         precio: { type: Number, required: true },
+        costo: { type: Number, default: null },
         cantidad: { type: Number, default: 1 },
       },
     ],
