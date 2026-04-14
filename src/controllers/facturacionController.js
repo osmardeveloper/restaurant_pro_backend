@@ -7,6 +7,8 @@ const Comanda = require('../models/Comanda');
 const Contador = require('../models/Contador');
 const Producto = require('../models/Producto');
 
+const METODOS_PAGO = ['bancolombia', 'nequi', 'efectivo', 'daviplata', 'datafono'];
+
 // ── GET /api/facturacion — Obtener facturas ──────────────────
 const getFacturas = async (req, res) => {
   try {
@@ -37,6 +39,29 @@ const getFacturaPorId = async (req, res) => {
 // Procesa el pago, cuenta secuencias, limpia la mesa si existe y retorna objeto Factura
 const crearFactura = async (req, res) => {
   try {
+    if (req.body.metodo_pago === 'dividido') {
+      const pagosParciales = Array.isArray(req.body.pagos_parciales) ? req.body.pagos_parciales : [];
+      const totalParciales = pagosParciales.reduce((sum, pago) => sum + Number(pago.monto || 0), 0);
+      const totalPagado = Number(req.body.total_pagado || 0);
+
+      if (!pagosParciales.length) {
+        return res.status(400).json({ message: 'Debes registrar los pagos parciales de la cuenta dividida.' });
+      }
+
+      if (totalParciales !== totalPagado) {
+        return res.status(400).json({ message: 'La suma de los pagos parciales debe coincidir con el total de la factura.' });
+      }
+    }
+
+    const propinas = Array.isArray(req.body.propinas) ? req.body.propinas : [];
+    const propinaInvalida = propinas.some(propina =>
+      !METODOS_PAGO.includes(propina.metodo_pago) || Number(propina.monto || 0) <= 0
+    );
+
+    if (propinaInvalida) {
+      return res.status(400).json({ message: 'Cada propina debe tener método de pago válido y monto mayor a cero.' });
+    }
+
     // 1. Obtener correlativo secuencial para No. Factura
     const counter = await Contador.findOneAndUpdate(
       { concepto: 'factura' },
@@ -78,7 +103,8 @@ const crearFactura = async (req, res) => {
     const populated = await factura.populate('id_cliente');
     res.status(201).json(populated);
   } catch (err) {
-    res.status(500).json({ message: 'Error al procesar la factura.', error: err.message });
+    const status = err.name === 'ValidationError' ? 400 : 500;
+    res.status(status).json({ message: 'Error al procesar la factura.', error: err.message });
   }
 };
 

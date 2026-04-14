@@ -3,6 +3,24 @@
 // ============================================================
 const mongoose = require('mongoose');
 
+const metodosPago = ['bancolombia', 'nequi', 'efectivo', 'daviplata', 'datafono'];
+
+const pagoParcialSchema = new mongoose.Schema(
+  {
+    metodo_pago: {
+      type: String,
+      enum: metodosPago,
+      required: [true, 'El método de pago parcial es obligatorio'],
+    },
+    monto: {
+      type: Number,
+      required: [true, 'El monto parcial es obligatorio'],
+      min: 0,
+    },
+  },
+  { _id: false }
+);
+
 const facturacionSchema = new mongoose.Schema(
   {
     numero_factura: {
@@ -12,7 +30,7 @@ const facturacionSchema = new mongoose.Schema(
     },
     metodo_pago: {
       type: String,
-      enum: ['bancolombia', 'nequi', 'efectivo', 'daviplata', 'datafono'],
+      enum: [...metodosPago, 'dividido'],
       required: [true, 'El método de pago es obligatorio'],
     },
     total_pagado: {
@@ -30,6 +48,14 @@ const facturacionSchema = new mongoose.Schema(
         cantidad: { type: Number, default: 1 },
       },
     ],
+    pagos_parciales: {
+      type: [pagoParcialSchema],
+      default: [],
+    },
+    propinas: {
+      type: [pagoParcialSchema],
+      default: [],
+    },
     id_cliente: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Cliente',
