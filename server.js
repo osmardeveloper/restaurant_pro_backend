@@ -24,6 +24,7 @@ const comandaRoutes  = require('./src/routes/comandas');
 const clienteRoutes  = require('./src/routes/clientes');
 const facturacionRoutes = require('./src/routes/facturacion');
 const gastoRoutes    = require('./src/routes/gastos');
+const costoRoutes    = require('./src/routes/costos');
 const configuracionRoutes = require('./src/routes/configuracion');
 const movimientoRoutes = require('./src/routes/movimientoRoutes');
 
@@ -36,6 +37,7 @@ app.use('/api/comandas', comandaRoutes);
 app.use('/api/clientes', clienteRoutes);
 app.use('/api/facturacion', facturacionRoutes);
 app.use('/api/gastos',   gastoRoutes);
+app.use('/api/costos',   costoRoutes);
 app.use('/api/configuraciones', configuracionRoutes);
 app.use('/api/inventario', movimientoRoutes);
 
