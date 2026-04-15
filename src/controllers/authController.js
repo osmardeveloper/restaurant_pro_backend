@@ -16,8 +16,11 @@ const login = async (req, res) => {
       return res.status(400).json({ message: 'Nombre y contraseña son requeridos.' });
     }
 
+    // Convertir nombre a minúscula para la búsqueda
+    const nombreMinuscula = nombre.toLowerCase();
+
     // Buscar usuario por nombre
-    const usuario = await Usuario.findOne({ nombre });
+    const usuario = await Usuario.findOne({ nombre: nombreMinuscula });
     if (!usuario) {
       return res.status(401).json({ message: 'Credenciales inválidas.' });
     }

@@ -29,11 +29,14 @@ const crearUsuario = async (req, res) => {
   try {
     const { nombre, password, rol } = req.body;
 
+    // Convertir nombre a minúscula
+    const nombreMinuscula = nombre.toLowerCase();
+
     // Verificar que el nombre no esté en uso
-    const existe = await Usuario.findOne({ nombre });
+    const existe = await Usuario.findOne({ nombre: nombreMinuscula });
     if (existe) return res.status(400).json({ message: 'El nombre de usuario ya existe.' });
 
-    const usuario = new Usuario({ nombre, password, rol });
+    const usuario = new Usuario({ nombre: nombreMinuscula, password, rol });
     await usuario.save(); // El hook pre-save encripta la contraseña
 
     res.status(201).json(usuario); // toJSON() oculta el password
@@ -50,7 +53,7 @@ const actualizarUsuario = async (req, res) => {
     if (!usuario) return res.status(404).json({ message: 'Usuario no encontrado.' });
 
     // Actualizar solo los campos enviados
-    if (nombre)   usuario.nombre = nombre;
+    if (nombre)   usuario.nombre = nombre.toLowerCase();
     if (rol)      usuario.rol    = rol;
     if (password) usuario.password = password; // El hook pre-save lo volverá a encriptar
 
