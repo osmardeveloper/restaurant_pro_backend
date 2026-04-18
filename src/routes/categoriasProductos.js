@@ -12,13 +12,13 @@ const {
 } = require('../controllers/categoriasProductosController');
 const { verificarToken, verificarSoloAdmin, verificarMasterKey } = require('../middlewares/auth');
 
-// Todas las rutas requieren autenticación
-router.use(verificarToken);
-
+// GET routes are public (for public menu)
 router.get('/',       getCategorias);
 router.get('/:id',    getCategoriaPorId);
-router.post('/',      verificarSoloAdmin, crearCategoria);
-router.put('/:id',    verificarSoloAdmin, actualizarCategoria);
-router.delete('/:id', verificarSoloAdmin, verificarMasterKey, eliminarCategoria);
+
+// POST, PUT, DELETE routes require authentication
+router.post('/',      verificarToken, verificarSoloAdmin, crearCategoria);
+router.put('/:id',    verificarToken, verificarSoloAdmin, actualizarCategoria);
+router.delete('/:id', verificarToken, verificarSoloAdmin, verificarMasterKey, eliminarCategoria);
 
 module.exports = router;
