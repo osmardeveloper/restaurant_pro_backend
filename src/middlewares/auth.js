@@ -56,8 +56,14 @@ const verificarNoEsCocina = (req, res, next) => {
  * Se usa en operaciones sensibles que solo admin debe poder realizar
  */
 const verificarSoloAdmin = (req, res, next) => {
+  console.log('Verificando admin. Usuario:', req.usuario);
+  if (!req.usuario) {
+    return res.status(401).json({ message: 'No autorizado. Token no válido.' });
+  }
   if (req.usuario?.rol !== 'admin') {
-    return res.status(403).json({ message: 'Esta operación solo está permitida para administradores.' });
+    return res.status(403).json({ 
+      message: `Acceso denegado. Requiere rol admin. Tu rol actual: ${req.usuario?.rol || 'sin rol'}` 
+    });
   }
   next();
 };

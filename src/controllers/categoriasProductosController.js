@@ -52,6 +52,7 @@ const crearCategoria = async (req, res) => {
     await categoria.save();
     res.status(201).json(categoria);
   } catch (err) {
+    console.error('Error en crearCategoria:', err);
     res.status(500).json({ message: 'Error al crear la categoría.', error: err.message });
   }
 };
