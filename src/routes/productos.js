@@ -10,15 +10,15 @@ const {
   actualizarProducto,
   eliminarProducto,
 } = require('../controllers/productoController');
-const { verificarToken, verificarMasterKey } = require('../middlewares/auth');
+const { verificarToken, verificarMasterKey, verificarSoloAdmin } = require('../middlewares/auth');
 
 // Todas las rutas de productos requieren autenticación
 router.use(verificarToken);
 
 router.get('/',       getProductos);
 router.get('/:id',    getProductoPorId);
-router.post('/',      crearProducto);
-router.put('/:id',    actualizarProducto);
-router.delete('/:id', verificarMasterKey, eliminarProducto);
+router.post('/',      verificarSoloAdmin, crearProducto);
+router.put('/:id',    verificarSoloAdmin, actualizarProducto);
+router.delete('/:id', verificarSoloAdmin, verificarMasterKey, eliminarProducto);
 
 module.exports = router;

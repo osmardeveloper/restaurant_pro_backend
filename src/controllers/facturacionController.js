@@ -14,7 +14,10 @@ const getFacturas = async (req, res) => {
   try {
     const facturas = await Facturacion.find()
       .populate('id_cliente', 'nombre apellido numero_documento')
-      .populate('id_comanda')
+      .populate({
+        path: 'id_comanda',
+        populate: { path: 'id_mesa', select: 'numero_mesa' }
+      })
       .sort({ createdAt: -1 });
     res.json(facturas);
   } catch (err) {

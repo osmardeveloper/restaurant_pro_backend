@@ -8,7 +8,6 @@ const comandaSchema = new mongoose.Schema(
     id_mesa: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Mesa',
-      required: [true, 'La mesa es obligatoria'],
     },
     id_cliente: {
       type: mongoose.Schema.Types.ObjectId,
@@ -23,6 +22,15 @@ const comandaSchema = new mongoose.Schema(
     facturada: {
       type: Boolean,
       default: false,
+    },
+    a_domicilio: {
+      type: Boolean,
+      default: false,
+    },
+    direccion_entrega: {
+      type: String,
+      trim: true,
+      default: ''
     }
   },
   { timestamps: true }

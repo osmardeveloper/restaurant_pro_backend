@@ -40,4 +40,26 @@ const verificarMasterKey = (req, res, next) => {
   next();
 };
 
-module.exports = { verificarToken, verificarMasterKey };
+/**
+ * Middleware que verifica que el usuario no sea 'cocina' (rol de solo lectura)
+ * Se usa en operaciones de actualización/edición
+ */
+const verificarNoEsCocina = (req, res, next) => {
+  if (req.usuario?.rol === 'cocina') {
+    return res.status(403).json({ message: 'Los usuarios de cocina solo pueden visualizar, no editar.' });
+  }
+  next();
+};
+
+/**
+ * Middleware que verifica que el usuario sea 'admin'
+ * Se usa en operaciones sensibles que solo admin debe poder realizar
+ */
+const verificarSoloAdmin = (req, res, next) => {
+  if (req.usuario?.rol !== 'admin') {
+    return res.status(403).json({ message: 'Esta operación solo está permitida para administradores.' });
+  }
+  next();
+};
+
+module.exports = { verificarToken, verificarMasterKey, verificarNoEsCocina, verificarSoloAdmin };

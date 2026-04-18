@@ -2,7 +2,7 @@
 // src/routes/mesas.js
 // ============================================================
 const router = require('express').Router();
-const { verificarToken, verificarMasterKey } = require('../middlewares/auth');
+const { verificarToken, verificarMasterKey, verificarNoEsCocina } = require('../middlewares/auth');
 const {
   getMesas,
   getMesaPorId,
@@ -14,7 +14,7 @@ const {
 router.get('/',    verificarToken, getMesas);
 router.get('/:id', verificarToken, getMesaPorId);
 router.post('/',   verificarToken, crearMesa);
-router.put('/:id', verificarToken, actualizarMesa);
+router.put('/:id', verificarToken, verificarNoEsCocina, actualizarMesa);
 router.delete('/:id', verificarToken, verificarMasterKey, eliminarMesa);
 
 module.exports = router;

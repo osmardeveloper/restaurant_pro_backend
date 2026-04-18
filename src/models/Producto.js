@@ -18,15 +18,7 @@ const productoSchema = new mongoose.Schema(
     tipo: {
       type: String,
       required: [true, 'El tipo de producto es obligatorio'],
-      enum: [
-        'bebidas', 
-        'postres', 
-        'platos_principales', 
-        'sopas', 
-        'entradas', 
-        'comidas_rapidas', 
-        'adicionales'
-      ],
+      trim: true,
     },
     precio: {
       type: Number,

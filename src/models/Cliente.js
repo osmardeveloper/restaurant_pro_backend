@@ -38,6 +38,11 @@ const clienteSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
       default: ''
+    },
+    direccion: {
+      type: String,
+      trim: true,
+      default: ''
     }
   },
   { timestamps: true }

@@ -66,6 +66,15 @@ const facturacionSchema = new mongoose.Schema(
       ref: 'Comanda',
       default: null,
     },
+    a_domicilio: {
+      type: Boolean,
+      default: false,
+    },
+    direccion_entrega: {
+      type: String,
+      trim: true,
+      default: ''
+    },
     fecha_emision: {
       type: Date,
       default: Date.now,
