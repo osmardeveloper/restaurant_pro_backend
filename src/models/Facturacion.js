@@ -70,9 +70,23 @@ const facturacionSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    venta_directa: {
+      type: Boolean,
+      default: false,
+    },
     direccion_entrega: {
       type: String,
       trim: true,
+      default: ''
+    },
+    monto_domicilio: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    metodo_pago_domicilio: {
+      type: String,
+      enum: [...metodosPago, ''],
       default: ''
     },
     fecha_emision: {

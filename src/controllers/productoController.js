@@ -42,7 +42,11 @@ const crearProducto = async (req, res) => {
 // ── PUT /api/productos/:id — Actualizar producto ──────────────
 const actualizarProducto = async (req, res) => {
   try {
-    const producto = await Producto.findByIdAndUpdate(req.params.id, req.body, {
+    // No permitimos actualizar la cantidad directamente (solo vía inventario)
+    const datosActualizar = { ...req.body };
+    delete datosActualizar.cantidad;
+    
+    const producto = await Producto.findByIdAndUpdate(req.params.id, datosActualizar, {
       new:           true,
       runValidators: true,
     });

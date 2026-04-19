@@ -31,6 +31,15 @@ const comandaSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: ''
+    },
+    monto_domicilio: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    venta_directa: {
+      type: Boolean,
+      default: false
     }
   },
   { timestamps: true }

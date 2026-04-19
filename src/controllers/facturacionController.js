@@ -38,6 +38,20 @@ const getFacturaPorId = async (req, res) => {
   }
 };
 
+// ── GET /api/facturacion/comanda/:comandaId ──────────────────
+const getFacturaPorComanda = async (req, res) => {
+  try {
+    const factura = await Facturacion.findOne({ id_comanda: req.params.comandaId })
+      .populate('id_cliente', 'nombre apellido tipo_documento numero_documento direccion')
+      .populate({ path: 'id_comanda', populate: { path: 'id_mesa', select: 'numero_mesa' } });
+    if (!factura) return res.status(404).json({ message: 'Factura no encontrada para esta comanda.' });
+    res.json(factura);
+  } catch (err) {
+    res.status(500).json({ message: 'Error al obtener factura.', error: err.message });
+  }
+};
+
+
 // ── POST /api/facturacion ────────────────────────────────────
 // Procesa el pago, cuenta secuencias, limpia la mesa si existe y retorna objeto Factura
 const crearFactura = async (req, res) => {
@@ -139,6 +153,7 @@ const eliminarFactura = async (req, res) => {
 module.exports = {
   getFacturas,
   getFacturaPorId,
+  getFacturaPorComanda,
   crearFactura,
   eliminarFactura,
 };

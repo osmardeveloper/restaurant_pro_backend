@@ -8,6 +8,7 @@ const facturacionController = require('../controllers/facturacionController');
 router.use(verificarToken);
 
 router.get('/', facturacionController.getFacturas);
+router.get('/comanda/:comandaId', facturacionController.getFacturaPorComanda);
 router.get('/:id', facturacionController.getFacturaPorId);
 router.post('/', facturacionController.crearFactura);
 router.delete('/:id', verificarMasterKey, facturacionController.eliminarFactura);

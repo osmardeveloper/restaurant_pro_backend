@@ -21,6 +21,12 @@ const usuarioSchema = new mongoose.Schema(
       enum: ['admin', 'mesero', 'cocina', 'cajero'],
       default: 'mesero',
     },
+    permisos: {
+      venta_directa: {
+        type: Boolean,
+        default: false
+      }
+    }
   },
   { timestamps: true }
 );
