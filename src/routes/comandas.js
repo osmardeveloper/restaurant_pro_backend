@@ -12,5 +12,6 @@ router.get('/', comandaController.getComanadas);
 router.get('/:id', comandaController.getComandaPorId);
 router.post('/', comandaController.crearComanda);
 router.put('/:id', verificarNoEsCocina, comandaController.actualizarComanda);
+router.delete('/:id', comandaController.eliminarComanda);
 
 module.exports = router;

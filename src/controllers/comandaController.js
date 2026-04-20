@@ -70,9 +70,34 @@ const actualizarComanda = async (req, res) => {
   }
 };
 
+// ── DELETE /api/comandas/:id — Eliminar comanda ──────────────
+const eliminarComanda = async (req, res) => {
+  try {
+    const masterKey = req.headers['x-master-key'];
+    const MASTER_KEY = process.env.MASTER_KEY || 'res2026';
+    
+    if (!masterKey || masterKey !== MASTER_KEY) {
+      return res.status(403).json({ message: 'Clave maestra incorrecta.' });
+    }
+
+    const comanda = await Comanda.findByIdAndDelete(req.params.id);
+    if (!comanda) return res.status(404).json({ message: 'Comanda no encontrada.' });
+    
+    // Si la comanda estaba asociada a una mesa, limpiar la mesa
+    if (comanda.id_mesa) {
+      await Mesa.findByIdAndUpdate(comanda.id_mesa, { estado: 'disponible', pedido_actual: null });
+    }
+    
+    res.json({ message: 'Comanda eliminada correctamente.', comanda });
+  } catch (err) {
+    res.status(500).json({ message: 'Error al eliminar la comanda.', error: err.message });
+  }
+};
+
 module.exports = {
   getComanadas,
   getComandaPorId,
   crearComanda,
   actualizarComanda,
+  eliminarComanda,
 };
