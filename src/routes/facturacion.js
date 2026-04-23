@@ -7,6 +7,10 @@ const facturacionController = require('../controllers/facturacionController');
 
 router.use(verificarToken);
 
+// Rutas de auditoría (solo requiere estar autenticado)
+router.get('/auditoria/eliminadas', facturacionController.getFacturasEliminadas);
+router.get('/auditoria/estadisticas', facturacionController.getEstadisticasFacturasEliminadas);
+
 router.get('/', facturacionController.getFacturas);
 router.get('/comanda/:comandaId', facturacionController.getFacturaPorComanda);
 router.get('/:id', facturacionController.getFacturaPorId);
@@ -14,3 +18,4 @@ router.post('/', facturacionController.crearFactura);
 router.delete('/:id', verificarMasterKey, facturacionController.eliminarFactura);
 
 module.exports = router;
+
