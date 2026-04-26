@@ -104,7 +104,7 @@ const crearFactura = async (req, res) => {
       );
       
       // Marcar orden (comanda) como concluida/facturada
-      await Comanda.findByIdAndUpdate(req.body.id_comanda, { facturada: true });
+      await Comanda.findByIdAndUpdate(req.body.id_comanda, { facturada: true, id_factura: factura._id });
     }
 
     // ── DESCONTAR STOCK AUTOMÁTICAMENTE ────────────────────────

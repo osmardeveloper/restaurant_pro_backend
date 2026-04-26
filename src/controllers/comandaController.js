@@ -11,6 +11,7 @@ const getComanadas = async (req, res) => {
       .populate('id_mesa', 'numero_mesa estado')
       .populate('id_cliente', 'nombre apellido numero_documento')
       .populate('ids_productos', 'nombre precio')
+      .populate('id_factura', 'numero_factura')
       .sort({ createdAt: -1 });
     res.json(comandas);
   } catch (err) {
@@ -24,7 +25,8 @@ const getComandaPorId = async (req, res) => {
     const comanda = await Comanda.findById(req.params.id)
       .populate('id_mesa', 'numero_mesa estado')
       .populate('id_cliente', 'nombre apellido numero_documento')
-      .populate('ids_productos', 'nombre precio');
+      .populate('ids_productos', 'nombre precio')
+      .populate('id_factura', 'numero_factura');
     if (!comanda) return res.status(404).json({ message: 'Comanda no encontrada.' });
     res.json(comanda);
   } catch (err) {

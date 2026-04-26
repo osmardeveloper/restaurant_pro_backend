@@ -40,6 +40,11 @@ const comandaSchema = new mongoose.Schema(
     venta_directa: {
       type: Boolean,
       default: false
+    },
+    id_factura: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Facturacion',
+      default: null
     }
   },
   { timestamps: true }
