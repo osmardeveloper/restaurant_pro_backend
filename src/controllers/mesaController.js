@@ -81,7 +81,13 @@ const actualizarMesa = async (req, res) => {
     const mesa = await Mesa.findByIdAndUpdate(req.params.id, req.body, {
       new:           true,
       runValidators: true,
-    }).populate('pedido_actual', 'nombre precio');
+    }).populate({
+      path: 'pedido_actual',
+      populate: [
+        { path: 'ids_productos', select: 'nombre precio' },
+        { path: 'id_cliente' }
+      ]
+    });
     if (!mesa) return res.status(404).json({ message: 'Mesa no encontrada.' });
     res.json(mesa);
   } catch (err) {

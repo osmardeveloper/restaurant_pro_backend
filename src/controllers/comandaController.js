@@ -63,7 +63,7 @@ const actualizarComanda = async (req, res) => {
     }).populate([
       { path: 'id_mesa', select: 'numero_mesa estado' },
       { path: 'id_cliente', select: 'nombre apellido numero_documento' },
-      { path: 'ids_productos', select: 'nombre precio' }
+      { path: 'ids_productos', select: 'nombre precio' },
     ]);
     if (!comanda) return res.status(404).json({ message: 'Comanda no encontrada.' });
     res.json(comanda);

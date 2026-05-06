@@ -32,6 +32,11 @@ const comandaSchema = new mongoose.Schema(
       trim: true,
       default: ''
     },
+    observaciones: {
+      type: String,
+      trim: true,
+      default: ''
+    },
     monto_domicilio: {
       type: Number,
       default: 0,
