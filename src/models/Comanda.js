@@ -15,8 +15,21 @@ const comandaSchema = new mongoose.Schema(
     },
     ids_productos: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Producto',
+        id_producto: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Producto',
+          required: true,
+        },
+        cantidad: {
+          type: Number,
+          default: 1,
+          min: 1,
+        },
+        observacion: {
+          type: String,
+          trim: true,
+          default: '',
+        },
       },
     ],
     facturada: {

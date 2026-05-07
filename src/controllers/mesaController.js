@@ -3,6 +3,45 @@
 // ============================================================
 const Contador = require('../models/Contador');
 const Mesa = require('../models/Mesa');
+const Producto = require('../models/Producto');
+const {
+  extraerIdsProductos,
+  normalizarLineasPedido,
+} = require('../utils/comandaItems');
+
+const poblarPedidoActual = async (mesas) => {
+  const lista = Array.isArray(mesas) ? mesas : [mesas];
+  const idsFaltantes = extraerIdsProductos(
+    lista.flatMap((mesa) => mesa?.pedido_actual?.ids_productos || [])
+  );
+
+  const productos = idsFaltantes.length > 0
+    ? await Producto.find({ _id: { $in: idsFaltantes } }).select('nombre precio costo').lean()
+    : [];
+
+  const mapaProductos = new Map(productos.map((producto) => [String(producto._id), producto]));
+
+  return lista.map((mesa) => {
+    const obj = mesa.toObject ? mesa.toObject() : mesa;
+    if (obj.pedido_actual) {
+      obj.pedido_actual = obj.pedido_actual.toObject ? obj.pedido_actual.toObject() : obj.pedido_actual;
+      obj.pedido_actual.ids_productos = normalizarLineasPedido(obj.pedido_actual.ids_productos || []).map((linea) => {
+        const producto = mapaProductos.get(String(linea.id_producto)) || linea.producto || null;
+        return {
+          id_producto: producto && producto._id ? producto : {
+            _id: linea.id_producto,
+            nombre: linea.nombre || producto?.nombre || 'Producto',
+            precio: linea.precio ?? producto?.precio ?? 0,
+            costo: linea.costo ?? producto?.costo ?? null,
+          },
+          cantidad: linea.cantidad,
+          observacion: linea.observacion || '',
+        };
+      });
+    }
+    return obj;
+  });
+};
 
 // ── GET /api/mesas — Obtener todas las mesas ─────────────────
 const getMesas = async (req, res) => {
@@ -11,12 +50,12 @@ const getMesas = async (req, res) => {
       .populate({
         path: 'pedido_actual',
         populate: [
-          { path: 'ids_productos', select: 'nombre precio' },
+          { path: 'ids_productos.id_producto', select: 'nombre precio costo' },
           { path: 'id_cliente' }
         ]
       })
       .sort({ numero_mesa: 1 });
-    res.json(mesas);
+    res.json(await poblarPedidoActual(mesas));
   } catch (err) {
     res.status(500).json({ message: 'Error al obtener las mesas.', error: err.message });
   }
@@ -29,12 +68,12 @@ const getMesaPorId = async (req, res) => {
       .populate({
         path: 'pedido_actual',
         populate: [
-          { path: 'ids_productos', select: 'nombre precio' },
+          { path: 'ids_productos.id_producto', select: 'nombre precio costo' },
           { path: 'id_cliente' }
         ]
       });
     if (!mesa) return res.status(404).json({ message: 'Mesa no encontrada.' });
-    res.json(mesa);
+    res.json((await poblarPedidoActual(mesa))[0]);
   } catch (err) {
     res.status(500).json({ message: 'Error al obtener la mesa.', error: err.message });
   }
@@ -84,12 +123,12 @@ const actualizarMesa = async (req, res) => {
     }).populate({
       path: 'pedido_actual',
       populate: [
-        { path: 'ids_productos', select: 'nombre precio' },
+        { path: 'ids_productos.id_producto', select: 'nombre precio costo' },
         { path: 'id_cliente' }
       ]
     });
     if (!mesa) return res.status(404).json({ message: 'Mesa no encontrada.' });
-    res.json(mesa);
+    res.json((await poblarPedidoActual(mesa))[0]);
   } catch (err) {
     res.status(500).json({ message: 'Error al actualizar la mesa.', error: err.message });
   }
