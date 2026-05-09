@@ -24,6 +24,7 @@ const configuracionSchema = new mongoose.Schema(
         cartera: true,
         abonos: true,
         cierre_caja: true,
+        reservas: true,
         gastos: true,
         costos: true,
         laboratorios: true,
