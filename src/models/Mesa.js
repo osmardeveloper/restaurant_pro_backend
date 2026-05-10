@@ -21,6 +21,11 @@ const mesaSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Comanda',
     },
+    // Observaciones de la mesa (cumpleaños, notas especiales, etc.)
+    observaciones: {
+      type: String,
+      default: '',
+    },
   },
   { timestamps: true }
 );

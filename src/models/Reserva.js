@@ -40,6 +40,10 @@ const reservaSchema = new mongoose.Schema(
       trim: true,
       match: [/^(?:[01]\d|2[0-3]):[0-5]\d$/, 'La hora debe tener formato HH:mm'],
     },
+    observaciones: {
+      type: String,
+      default: '',
+    },
   },
   { timestamps: true }
 );
