@@ -98,9 +98,10 @@ const crearFactura = async (req, res) => {
     // Si la factura provino de una comanda asociada a una mesa, liberar mesa.
     if (req.body.id_comanda) {
       // Liberar y desvincular mesa para recibir nuevos cobros y clientes
+      // También limpiar observaciones
       await Mesa.findOneAndUpdate(
         { pedido_actual: req.body.id_comanda },
-        { estado: 'disponible', pedido_actual: null }
+        { estado: 'disponible', pedido_actual: null, observaciones: '' }
       );
       
       // Marcar orden (comanda) como concluida/facturada

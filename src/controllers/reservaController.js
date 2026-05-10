@@ -2,6 +2,7 @@
 // src/controllers/reservaController.js — CRUD de Reservas
 // ============================================================
 const Reserva = require('../models/Reserva');
+const Mesa = require('../models/Mesa');
 
 const normalizarMesas = (mesas = []) => [...new Set(mesas.filter(Boolean).map(String))];
 
@@ -169,8 +170,20 @@ const actualizarReserva = async (req, res) => {
 
 const eliminarReserva = async (req, res) => {
   try {
-    const reserva = await Reserva.findByIdAndDelete(req.params.id);
+    // Obtener la reserva antes de eliminarla
+    const reserva = await Reserva.findById(req.params.id);
     if (!reserva) return res.status(404).json({ message: 'Reserva no encontrada.' });
+    
+    // Si la reserva tiene mesas asociadas, limpiar sus observaciones
+    if (reserva.mesas && reserva.mesas.length > 0) {
+      await Mesa.updateMany(
+        { _id: { $in: reserva.mesas } },
+        { observaciones: '' }
+      );
+    }
+    
+    // Ahora eliminar la reserva
+    await Reserva.findByIdAndDelete(req.params.id);
     res.json({ message: 'Reserva eliminada correctamente.' });
   } catch (err) {
     res.status(500).json({ message: 'Error al eliminar la reserva.', error: err.message });
