@@ -6,9 +6,15 @@ const Producto = require('../models/Producto');
 // ── GET /api/productos — Obtener productos (con filtros opcionales)
 const getProductos = async (req, res) => {
   try {
-    const { tipo } = req.query;
+    const { tipo, soloVisibles } = req.query;
     const query = {};
     if (tipo) query.tipo = tipo;
+    if (soloVisibles === 'true') {
+      query.$or = [
+        { visibleMenu: true },
+        { visibleMenu: { $exists: false } }
+      ];
+    }
 
     const productos = await Producto.find(query).sort({ nombre: 1 });
     res.json(productos);

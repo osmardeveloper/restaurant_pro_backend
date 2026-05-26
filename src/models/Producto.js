@@ -36,6 +36,10 @@ const productoSchema = new mongoose.Schema(
       min: [0, 'El costo no puede ser negativo'],
       default: null,
     },
+    visibleMenu: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );
