@@ -29,6 +29,7 @@ const gastoRoutes    = require('./src/routes/gastos');
 const costoRoutes    = require('./src/routes/costos');
 const configuracionRoutes = require('./src/routes/configuracion');
 const movimientoRoutes = require('./src/routes/movimientoRoutes');
+const turnosTrabajadosRoutes = require('./src/routes/turnosTrabajados');
 
 // ── Montar rutas ────────────────────────────────────────────
 app.use('/api/auth',     authRoutes);
@@ -44,6 +45,7 @@ app.use('/api/gastos',   gastoRoutes);
 app.use('/api/costos',   costoRoutes);
 app.use('/api/configuraciones', configuracionRoutes);
 app.use('/api/inventario', movimientoRoutes);
+app.use('/api/turnos-trabajados', turnosTrabajadosRoutes);
 
 // ── Ruta de salud ────────────────────────────────────────────
 app.get('/', (req, res) => {
